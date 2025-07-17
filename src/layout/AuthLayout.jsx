@@ -3,7 +3,7 @@ import { Outlet } from "react-router";
 
 export default function AuthLayout() {
   return (
-    <div>
+    <div className="px-8">
       AuthLayout
       <Outlet />
     </div>

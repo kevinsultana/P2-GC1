@@ -31,6 +31,10 @@ export default function Register() {
       console.log(error);
     }
   };
+
+  const handleToLogin = () => {
+    navigate("/auth/login");
+  };
   return (
     <div>
       <div>Register</div>
@@ -55,6 +59,7 @@ export default function Register() {
         />
         <button onClick={(e) => handleRegister(e)}>Register</button>
       </form>
+      <button onClick={handleToLogin}>Login</button>
     </div>
   );
 }

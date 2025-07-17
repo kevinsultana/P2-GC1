@@ -2,6 +2,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import { auth } from "../firebase/firebase";
 import { useNavigate } from "react-router";
+import Swal from "sweetalert2";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -13,7 +14,7 @@ export default function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      alert("passwords do not match");
+      Swal.fire("Passwords do not match");
       return;
     }
     try {
@@ -26,9 +27,11 @@ export default function Register() {
       setEmail("");
       setPassword("");
       setConfirmPassword("");
+      Swal.fire("Register successful");
       navigate("/", { replace: true });
     } catch (error) {
       console.log(error);
+      Swal.fire(error.message);
     }
   };
 

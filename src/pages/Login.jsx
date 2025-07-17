@@ -2,6 +2,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import { auth } from "../firebase/firebase";
 import { useNavigate } from "react-router";
+import Swal from "sweetalert2";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -17,6 +18,7 @@ export default function Login() {
       // console.log(response);
       setEmail("");
       setPassword("");
+      Swal.fire("Login successful");
       navigate("/", { replace: true });
     } catch (error) {
       console.log(error);

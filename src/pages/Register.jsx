@@ -1,5 +1,60 @@
-import React from "react";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import React, { useState } from "react";
+import { auth } from "../firebase/firebase";
+import { useNavigate } from "react-router";
 
 export default function Register() {
-  return <div>Register</div>;
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const navigate = useNavigate();
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      alert("passwords do not match");
+      return;
+    }
+    try {
+      const response = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      // console.log(response);
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+      navigate("/", { replace: true });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  return (
+    <div>
+      <div>Register</div>
+      <form className="flex flex-col">
+        <label>Email</label>
+        <input
+          type="text"
+          placeholder="Enter your email..."
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <label>password</label>
+        <input
+          type="text"
+          placeholder="Enter your password..."
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <label>confirm password</label>
+        <input
+          type="text"
+          placeholder="Enter your confirm password..."
+          onChange={(e) => setConfirmPassword(e.target.value)}
+        />
+        <button onClick={(e) => handleRegister(e)}>Register</button>
+      </form>
+    </div>
+  );
 }

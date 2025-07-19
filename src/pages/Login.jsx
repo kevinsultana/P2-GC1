@@ -32,7 +32,7 @@ export default function Login() {
   };
 
   return (
-    <div className="w-1/4 bg-white border rounded-2xl p-4">
+    <div className="w-7/8 lg:w-1/4 bg-white border rounded-2xl p-4">
       <div className="text-2xl font-bold text-black text-center">Login</div>
       <form className="flex flex-col space-y-2">
         <label>Email</label>

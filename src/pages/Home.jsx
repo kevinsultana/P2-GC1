@@ -28,7 +28,7 @@ export default function Home() {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 text-black dark:text-white">
+    <div className="bg-white dark:bg-gray-800 text-black dark:text-white transition-all duration-300">
       <div>Home Page</div>
       <h1>hello {user.email ? user.email : "user"}</h1>
       <button onClick={handleLogOut}>LogOut</button>

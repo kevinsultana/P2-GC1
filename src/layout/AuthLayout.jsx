@@ -6,7 +6,7 @@ import LogoAlt from "../assets/logoAlt.png";
 export default function AuthLayout() {
   return (
     <div className="lg:px-8 w-full h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-700 transition-all duration-300">
-      <div className="rounded-3xl overflow-hidden mb-4">
+      <div className="rounded-3xl overflow-hidden mb-4 bg-white dark:bg-gray-400 transition-all duration-300">
         <img src={LogoAlt} alt="logo" className="w-20" />
       </div>
       <Outlet />

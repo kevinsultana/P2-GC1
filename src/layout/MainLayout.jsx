@@ -8,7 +8,7 @@ export default function MainLayout() {
     <div className="px-8">
       <Navbar />
       <Outlet />
-      <div className="fixed bottom-10 right-10">
+      <div className="fixed bottom-3 right-3 lg:bottom-10 lg:right-10">
         <DarkModeToggle />
       </div>
     </div>

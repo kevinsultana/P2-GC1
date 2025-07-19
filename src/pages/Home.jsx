@@ -21,17 +21,10 @@ export default function Home() {
     stateUser();
   }, []);
 
-  const handleLogOut = () => {
-    auth.signOut().then(() => {
-      navigate("/auth/login", { replace: true });
-    });
-  };
-
   return (
     <div className="bg-white dark:bg-gray-800 text-black dark:text-white transition-all duration-300">
       <div>Home Page</div>
       <h1>hello {user.email ? user.email : "user"}</h1>
-      <button onClick={handleLogOut}>LogOut</button>
     </div>
   );
 }

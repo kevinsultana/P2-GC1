@@ -12,10 +12,8 @@ export default function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    // console.log(email, password);
     try {
       const response = await signInWithEmailAndPassword(auth, email, password);
-      // console.log(response);
       setEmail("");
       setPassword("");
       Swal.fire("Login successful");
@@ -59,7 +57,7 @@ export default function Login() {
         Don't have an Account{" "}
         <span
           onClick={handleRegister}
-          className="cursor-pointer text-blue-400 dark:text-blue-700 hover:text-blue-500 dark:hover:text-blue-800"
+          className="cursor-pointer font-bold text-blue-400 dark:text-blue-700 hover:text-blue-500 dark:hover:text-blue-800"
         >
           Register Here
         </span>

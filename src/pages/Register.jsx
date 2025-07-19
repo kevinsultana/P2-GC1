@@ -39,30 +39,46 @@ export default function Register() {
     navigate("/auth/login");
   };
   return (
-    <div>
-      <div>Register</div>
-      <form className="flex flex-col">
+    <div className="w-1/4 bg-white border rounded-2xl p-4">
+      <div className="text-2xl font-bold text-black text-center">Register</div>
+      <form className="flex flex-col space-y-2">
         <label>Email</label>
         <input
           type="text"
           placeholder="Enter your email..."
           onChange={(e) => setEmail(e.target.value)}
+          className="border p-1 rounded-sm"
         />
         <label>password</label>
         <input
           type="text"
           placeholder="Enter your password..."
           onChange={(e) => setPassword(e.target.value)}
+          className="border p-1 rounded-sm"
         />
         <label>confirm password</label>
         <input
           type="text"
           placeholder="Enter your confirm password..."
           onChange={(e) => setConfirmPassword(e.target.value)}
+          className="border p-1 rounded-sm"
         />
-        <button onClick={(e) => handleRegister(e)}>Register</button>
+        <button
+          onClick={(e) => handleRegister(e)}
+          className="bg-blue-400 w-1/2 self-center text-white dark:bg-blue-700 rounded-xl hover:bg-blue-500 p-2 my-4"
+        >
+          Register
+        </button>
       </form>
-      <button onClick={handleToLogin}>Login</button>
+      <p className="text-center">
+        Already Have an Account?{" "}
+        <span
+          onClick={handleToLogin}
+          className="cursor-pointer font-bold text-blue-400 dark:text-blue-700 hover:text-blue-500 dark:hover:text-blue-800"
+        >
+          login Here
+        </span>
+      </p>
     </div>
   );
 }

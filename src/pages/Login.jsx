@@ -22,6 +22,7 @@ export default function Login() {
       navigate("/", { replace: true });
     } catch (error) {
       console.log(error);
+      Swal.fire("invalid email or password");
     }
   };
 
@@ -30,24 +31,39 @@ export default function Login() {
   };
 
   return (
-    <div>
-      <div>Login</div>
-      <form className="flex flex-col">
+    <div className="w-1/4 bg-white border rounded-2xl p-4">
+      <div className="text-2xl font-bold text-black text-center">Login</div>
+      <form className="flex flex-col space-y-2">
         <label>Email</label>
         <input
           type="text"
           placeholder="Enter your email..."
           onChange={(e) => setEmail(e.target.value)}
+          className="border p-1 rounded-sm"
         />
-        <label>password</label>
+        <label>Password</label>
         <input
           type="text"
           placeholder="Enter your password..."
           onChange={(e) => setPassword(e.target.value)}
+          className="border p-1 rounded-sm"
         />
-        <button onClick={(e) => handleLogin(e)}>Login</button>
+        <button
+          onClick={(e) => handleLogin(e)}
+          className="bg-blue-400 w-1/2 self-center text-white dark:bg-blue-700 rounded-xl hover:bg-blue-500 p-2 my-4"
+        >
+          Login
+        </button>
       </form>
-      <button onClick={handleRegister}>Register</button>
+      <p className="text-center">
+        Don't have an Account{" "}
+        <span
+          onClick={handleRegister}
+          className="cursor-pointer text-blue-400 dark:text-blue-700 hover:text-blue-500 dark:hover:text-blue-800"
+        >
+          Register Here
+        </span>
+      </p>
     </div>
   );
 }

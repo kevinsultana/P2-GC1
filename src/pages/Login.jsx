@@ -3,10 +3,13 @@ import React, { useState } from "react";
 import { auth } from "../firebase/firebase";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
+import { FaEye, FaEyeSlash } from "react-icons/fa6";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
 
@@ -40,12 +43,21 @@ export default function Login() {
           className="border p-1 rounded-sm"
         />
         <label>Password</label>
-        <input
-          type="text"
-          placeholder="Enter your password..."
-          onChange={(e) => setPassword(e.target.value)}
-          className="border p-1 rounded-sm"
-        />
+        <div className="flex items-center justify-between border p-1 rounded-sm ">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Enter your password..."
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full outline-none"
+          />
+          <div
+            onClick={() => {
+              setShowPassword(!showPassword);
+            }}
+          >
+            {showPassword ? <FaEye /> : <FaEyeSlash />}
+          </div>
+        </div>
         <button
           onClick={(e) => handleLogin(e)}
           className="bg-blue-400 w-1/2 self-center text-white dark:bg-blue-700 rounded-xl hover:bg-blue-500 p-2 my-4"

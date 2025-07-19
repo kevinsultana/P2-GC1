@@ -3,11 +3,15 @@ import React, { useState } from "react";
 import { auth } from "../firebase/firebase";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
+import { FaEye, FaEyeSlash } from "react-icons/fa6";
 
 export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const navigate = useNavigate();
 
@@ -23,7 +27,6 @@ export default function Register() {
         email,
         password
       );
-      // console.log(response);
       setEmail("");
       setPassword("");
       setConfirmPassword("");
@@ -49,20 +52,38 @@ export default function Register() {
           onChange={(e) => setEmail(e.target.value)}
           className="border p-1 rounded-sm"
         />
-        <label>password</label>
-        <input
-          type="text"
-          placeholder="Enter your password..."
-          onChange={(e) => setPassword(e.target.value)}
-          className="border p-1 rounded-sm"
-        />
-        <label>confirm password</label>
-        <input
-          type="text"
-          placeholder="Enter your confirm password..."
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          className="border p-1 rounded-sm"
-        />
+        <label>Password</label>
+        <div className="border p-1 px-2 rounded-sm flex justify-between items-center">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Enter your password..."
+            onChange={(e) => setPassword(e.target.value)}
+            className="outline-none w-full"
+          />
+          <div
+            onClick={() => {
+              setShowPassword(!showPassword);
+            }}
+          >
+            {!showPassword ? <FaEye /> : <FaEyeSlash />}
+          </div>
+        </div>
+        <label>Confirm password</label>
+        <div className="border p-1 px-2 rounded-sm flex justify-between items-center">
+          <input
+            type={showConfirmPassword ? "text" : "password"}
+            placeholder="Enter your confirm password..."
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className="outline-none w-full"
+          />
+          <div
+            onClick={() => {
+              setShowConfirmPassword(!showConfirmPassword);
+            }}
+          >
+            {!showConfirmPassword ? <FaEye /> : <FaEyeSlash />}
+          </div>
+        </div>
         <button
           onClick={(e) => handleRegister(e)}
           className="bg-blue-400 w-1/2 self-center text-white dark:bg-blue-700 rounded-xl hover:bg-blue-500 p-2 my-4"

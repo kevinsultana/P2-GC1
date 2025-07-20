@@ -9,11 +9,24 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isAgree, setIsAgree] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showModalTc, setShowModalTc] = useState(false);
+  const [animateModal, setAnimateModal] = useState(false);
 
   const [loading, setLoading] = useState(false);
+
+  const openModalTc = () => {
+    setShowModalTc(true);
+    setTimeout(() => setAnimateModal(true), 10);
+  };
+
+  const handleCloseModal = () => {
+    setAnimateModal(false);
+    setTimeout(() => setShowModalTc(false), 300);
+  };
 
   const navigate = useNavigate();
 
@@ -32,6 +45,13 @@ export default function Register() {
       setLoading(false);
       return;
     }
+
+    if (!isAgree) {
+      Swal.fire("Please agree to the terms and conditions");
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await createUserWithEmailAndPassword(
         auth,
@@ -104,6 +124,22 @@ export default function Register() {
             {!showConfirmPassword ? <FaEye /> : <FaEyeSlash />}
           </div>
         </div>
+        <label className="flex gap-2 items-center mt-2">
+          <input
+            type="checkbox"
+            value={isAgree}
+            onChange={() => setIsAgree(!isAgree)}
+          />
+          <span className="text-sm">
+            I agree to the{" "}
+            <span
+              onClick={openModalTc}
+              className="text-blue-500 cursor-pointer"
+            >
+              terms and conditions
+            </span>
+          </span>
+        </label>
         <button
           onClick={(e) => handleRegister(e)}
           className="bg-blue-400 w-1/2 self-center text-white dark:bg-blue-700 rounded-xl hover:bg-blue-500 p-2 my-4"
@@ -124,6 +160,42 @@ export default function Register() {
           login Here
         </span>
       </p>
+      {showModalTc && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div
+            className={`bg-white dark:bg-gray-800 rounded-lg p-6 w-11/12 max-w-lg relative transform transition-all duration-300 ${
+              animateModal ? "scale-100 opacity-100" : "scale-90 opacity-0"
+            }`}
+          >
+            <h2 className="text-xl font-bold mb-4 text-black dark:text-white">
+              Terms & Conditions
+            </h2>
+            <div className="text-sm text-gray-700 dark:text-gray-300 space-y-2 max-h-[300px] overflow-y-auto">
+              <p>
+                By registering, you agree to abide by the rules and regulations
+                of our platform.
+              </p>
+              <p>
+                Your data will be securely stored and not shared with third
+                parties without consent.
+              </p>
+              <p>
+                Please do not share your account credentials with anyone else.
+              </p>
+              <p>
+                We reserve the right to update our terms at any time with proper
+                notice.
+              </p>
+            </div>
+            <button
+              onClick={handleCloseModal}
+              className="mt-6 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

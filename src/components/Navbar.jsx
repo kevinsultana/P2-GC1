@@ -16,7 +16,7 @@ export default function Navbar() {
   };
 
   return (
-    <div className="flex justify-between p-2 px-10 border items-center bg-primaryLight dark:bg-primaryDark transition-all duration-300">
+    <div className="flex justify-between p-2 px-4 lg:px-10 border border-black dark:border-white items-center bg-primaryLight dark:bg-primaryDark transition-all duration-300">
       <div className="flex items-center gap-4">
         <img src={LogoAlt} alt="logo" className="w-10" />
         <h1 className="text-black dark:text-white">Apel Gadget Store</h1>

@@ -13,10 +13,13 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setLoading(true);
     if (password !== confirmPassword) {
       Swal.fire("Passwords do not match");
       return;
@@ -32,7 +35,9 @@ export default function Register() {
       setConfirmPassword("");
       Swal.fire("Register successful");
       navigate("/", { replace: true });
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       console.log(error);
       Swal.fire(error.message);
     }
@@ -44,13 +49,13 @@ export default function Register() {
   return (
     <div className="w-7/8 lg:w-1/4 bg-white border rounded-2xl p-4 shadow-2xl dark:shadow-white/50">
       <div className="text-2xl font-bold text-black text-center">Register</div>
-      <form className="flex flex-col space-y-2">
-        <label>Email</label>
+      <form className="flex flex-col space-y-2 text-black">
+        <label className="text-black">Email</label>
         <input
           type="text"
           placeholder="Enter your email..."
           onChange={(e) => setEmail(e.target.value)}
-          className="border p-1 rounded-sm"
+          className="border p-1 rounded-sm outline-none"
         />
         <label>Password</label>
         <div className="border p-1 px-2 rounded-sm flex justify-between items-center">
@@ -88,10 +93,14 @@ export default function Register() {
           onClick={(e) => handleRegister(e)}
           className="bg-blue-400 w-1/2 self-center text-white dark:bg-blue-700 rounded-xl hover:bg-blue-500 p-2 my-4"
         >
-          Register
+          {loading ? (
+            <span className="loading loading-dots loading-md"></span>
+          ) : (
+            "Register"
+          )}
         </button>
       </form>
-      <p className="text-center">
+      <p className="text-center text-black">
         Already Have an Account?{" "}
         <span
           onClick={handleToLogin}

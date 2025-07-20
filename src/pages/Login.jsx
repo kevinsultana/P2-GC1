@@ -18,6 +18,19 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoadingBtn(true);
+
+    if (!email) {
+      Swal.fire("Please enter your email");
+      setLoadingBtn(false);
+      return;
+    }
+
+    if (!password) {
+      Swal.fire("Please enter your password");
+      setLoadingBtn(false);
+      return;
+    }
+
     try {
       const response = await signInWithEmailAndPassword(auth, email, password);
       setEmail("");

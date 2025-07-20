@@ -1,5 +1,5 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase/firebase";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
@@ -11,22 +11,22 @@ export default function Login() {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const [loading, setLoading] = useState(false);
+  const [loadingBtn, setLoadingBtn] = useState(false);
 
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setLoadingBtn(true);
     try {
       const response = await signInWithEmailAndPassword(auth, email, password);
       setEmail("");
       setPassword("");
       Swal.fire("Login successful");
       navigate("/", { replace: true });
-      setLoading(false);
+      setLoadingBtn(false);
     } catch (error) {
-      setLoading(false);
+      setLoadingBtn(false);
       console.log(error);
       Swal.fire("Invalid Email or Password");
     }
@@ -68,7 +68,7 @@ export default function Login() {
           onClick={(e) => handleLogin(e)}
           className="bg-blue-400 w-1/2 self-center text-white dark:bg-blue-700 rounded-xl hover:bg-blue-500 p-2 my-4"
         >
-          {loading ? (
+          {loadingBtn ? (
             <span className="loading loading-dots loading-md"></span>
           ) : (
             "Login"

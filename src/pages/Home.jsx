@@ -1,30 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../firebase/firebase";
-import { useNavigate } from "react-router";
+import React, { useContext } from "react";
+
+import { AuthContext } from "../contexts/AuthContext";
 
 export default function Home() {
-  const navigate = useNavigate();
-  const [user, setUser] = useState({});
+  const { user, loading } = useContext(AuthContext);
 
-  const stateUser = async () => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser(user);
-      } else {
-        navigate("/auth/login", { replace: true });
-      }
-    });
-  };
-
-  useEffect(() => {
-    stateUser();
-  }, []);
-
+  if (loading) return <div>Loading...</div>;
   return (
     <div className="bg-white dark:bg-gray-800 text-black dark:text-white transition-all duration-300">
       <div>Home Page</div>
-      <h1>hello {user.email ? user.email : "user"}</h1>
+      <h1>hello {user?.email}</h1>
     </div>
   );
 }

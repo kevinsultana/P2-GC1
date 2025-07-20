@@ -1,9 +1,25 @@
-import React from "react";
-import { Outlet } from "react-router";
+import React, { useContext, useEffect } from "react";
+import { Outlet, useNavigate } from "react-router";
 import Navbar from "../components/Navbar";
 import DarkModeToggle from "../components/DarkModeToggle";
+import { AuthContext } from "../contexts/AuthContext";
 
 export default function MainLayout() {
+  const navigate = useNavigate();
+  const { user, loading } = useContext(AuthContext);
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/auth/login", { replace: true });
+    }
+  }, [user]);
+
+  if (loading)
+    return (
+      <div className="bg-primaryLight dark:bg-primaryDark text-black dark:text-white w-full h-screen flex items-center justify-center">
+        <span className="loading loading-dots loading-xl"></span>
+      </div>
+    );
   return (
     <div className=" bg-white h-screen dark:bg-gray-800 transition-all duration-300">
       <Navbar />

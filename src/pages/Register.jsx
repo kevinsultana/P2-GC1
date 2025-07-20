@@ -1,5 +1,5 @@
-import { createUserWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase/firebase";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
@@ -20,8 +20,16 @@ export default function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    if (!email || !password || !confirmPassword) {
+      Swal.fire("Please fill in all fields");
+      setLoading(false);
+      return;
+    }
+
     if (password !== confirmPassword) {
       Swal.fire("Passwords do not match");
+      setLoading(false);
       return;
     }
     try {
@@ -37,9 +45,16 @@ export default function Register() {
       navigate("/", { replace: true });
       setLoading(false);
     } catch (error) {
+      let message = "Register Failed";
+      if (error.code === "auth/email-already-in-use") {
+        message = "Email already in use";
+      } else if (error.code === "auth/invalid-email") {
+        message = "Invalid email";
+      } else if (error.code === "auth/weak-password") {
+        message = "Weak password";
+      }
+      Swal.fire(message);
       setLoading(false);
-      console.log(error);
-      Swal.fire(error.message);
     }
   };
 

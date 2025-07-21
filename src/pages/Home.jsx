@@ -10,7 +10,9 @@ export default function Home() {
       <div className="flex flex-col items-center justify-center h-96 ">
         <div>Home Page</div>
         <p>hello {user?.email}</p>
-        <h1 className="animate-pulse text-7xl my-4">Under Development</h1>
+        <h1 className="animate-pulse text-3xl lg:text-7xl my-4">
+          Under Development
+        </h1>
       </div>
     </div>
   );

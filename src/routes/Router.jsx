@@ -6,6 +6,7 @@ import LoginPage from "../pages/Login";
 import RegisterPage from "../pages/Register";
 import CMSLayout from "../layout/CMSLayout";
 import DashboardCMS from "../pages/DashboardCMS";
+import AddNew from "../pages/AddNew";
 
 const router = createBrowserRouter([
   {
@@ -39,6 +40,10 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <DashboardCMS />,
+      },
+      {
+        path: "new-product",
+        element: <AddNew />,
       },
     ],
   },

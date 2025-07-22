@@ -1,7 +1,7 @@
 import React from "react";
 import { RouterProvider } from "react-router";
 import { AuthProvider } from "./contexts/AuthContext.jsx";
-import router from "./routes/router.jsx";
+import router from "./routes/Router.jsx";
 
 export default function App() {
   return (

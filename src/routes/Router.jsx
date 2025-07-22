@@ -8,7 +8,7 @@ import CMSLayout from "../layout/CMSLayout";
 import DashboardCMS from "../pages/DashboardCMS";
 import AddNew from "../pages/AddNew";
 
-const WebRoute = createBrowserRouter([
+const router = createBrowserRouter([
   {
     path: "/",
     element: <MainLayout />,
@@ -53,4 +53,4 @@ const WebRoute = createBrowserRouter([
   },
 ]);
 
-export default WebRoute;
+export default router;

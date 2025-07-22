@@ -4,6 +4,8 @@ import AuthLayout from "../layout/AuthLayout";
 import Home from "../pages/Home";
 import LoginPage from "../pages/Login";
 import RegisterPage from "../pages/Register";
+import CMSLayout from "../layout/CMSLayout";
+import DashboardCMS from "../pages/DashboardCMS";
 
 const router = createBrowserRouter([
   {
@@ -29,6 +31,20 @@ const router = createBrowserRouter([
         element: <RegisterPage />,
       },
     ],
+  },
+  {
+    path: "/cms",
+    element: <CMSLayout />,
+    children: [
+      {
+        index: true,
+        element: <DashboardCMS />,
+      },
+    ],
+  },
+  {
+    path: "*",
+    element: <div>404</div>,
   },
 ]);
 

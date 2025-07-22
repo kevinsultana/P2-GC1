@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase/firebase";
+import { auth, db } from "../firebase/firebase";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
+import { doc, setDoc } from "firebase/firestore";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -58,6 +59,10 @@ export default function Register() {
         email,
         password
       );
+      await setDoc(doc(db, "users", response.user.uid), {
+        email: response.user.email,
+        role: "user",
+      });
       setEmail("");
       setPassword("");
       setConfirmPassword("");

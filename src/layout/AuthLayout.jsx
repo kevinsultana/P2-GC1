@@ -6,13 +6,16 @@ import { AuthContext } from "../contexts/AuthContext";
 
 export default function AuthLayout() {
   const navigate = useNavigate();
-  const { user, loading } = useContext(AuthContext);
+  const { user, loading, userRole } = useContext(AuthContext);
 
   useEffect(() => {
     if (user) {
       navigate("/", { replace: true });
     }
-  }, [user]);
+    if (userRole === "admin") {
+      navigate("/cms", { replace: true });
+    }
+  }, [user, userRole]);
 
   if (loading)
     return (

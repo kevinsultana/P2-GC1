@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import DarkModeToggle from "../components/DarkModeToggle";
 import { AuthContext } from "../contexts/AuthContext";
 
-export default function MainLayout() {
+export default function CMSLayout() {
   const navigate = useNavigate();
   const { user, loading, userRole } = useContext(AuthContext);
 

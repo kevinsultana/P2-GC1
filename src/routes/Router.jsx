@@ -49,7 +49,7 @@ const WebRoute = createBrowserRouter([
   },
   {
     path: "*",
-    element: <div>404</div>,
+    element: <div>404 not found</div>,
   },
 ]);
 

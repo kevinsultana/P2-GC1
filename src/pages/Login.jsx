@@ -1,16 +1,18 @@
 import React, { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase/firebase";
+import {
+  GoogleAuthProvider,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+} from "firebase/auth";
+import { auth, googleProvider } from "../firebase/firebase";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
-import { FaEye, FaEyeSlash } from "react-icons/fa6";
+import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa6";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [showPassword, setShowPassword] = useState(false);
-
   const [loadingBtn, setLoadingBtn] = useState(false);
 
   const navigate = useNavigate();
@@ -49,6 +51,18 @@ export default function Login() {
     navigate("/auth/register");
   };
 
+  const handleGoogleSignIn = async () => {
+    try {
+      const oauthLogin = await signInWithPopup(auth, googleProvider);
+      const credential = GoogleAuthProvider.credentialFromResult(oauthLogin);
+      const token = credential.accessToken;
+      navigate("/", { replace: true });
+    } catch (error) {
+      console.log(error);
+      Swal.fire("Error Signing in with Google");
+    }
+  };
+
   return (
     <div className="w-7/8 lg:w-1/4 bg-white border rounded-2xl p-4 shadow-2xl dark:shadow-white/50">
       <div className="text-2xl font-bold text-black text-center">Login</div>
@@ -79,7 +93,7 @@ export default function Login() {
         </div>
         <button
           onClick={(e) => handleLogin(e)}
-          className="bg-blue-400 w-1/2 self-center text-white dark:bg-blue-700 rounded-xl hover:bg-blue-500 p-2 my-4"
+          className="bg-blue-400 w-1/2 self-center text-white dark:bg-blue-700 rounded-xl hover:bg-blue-500 p-2 mt-2"
         >
           {loadingBtn ? (
             <span className="loading loading-dots loading-md"></span>
@@ -88,6 +102,15 @@ export default function Login() {
           )}
         </button>
       </form>
+      <div className="w-full justify-center flex">
+        <button
+          onClick={handleGoogleSignIn}
+          className="w-3/4 flex items-center justify-center gap-4 text-white bg-red-600 rounded-xl hover:bg-red-700 p-2 my-2 transition-all duration-300"
+        >
+          <FaGoogle />
+          <p>Login with Google</p>
+        </button>
+      </div>
       <p className="text-center text-black">
         Don't have an Account{" "}
         <span

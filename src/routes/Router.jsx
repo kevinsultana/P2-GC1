@@ -20,20 +20,6 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/auth",
-    element: <AuthLayout />,
-    children: [
-      {
-        path: "login",
-        element: <LoginPage />,
-      },
-      {
-        path: "register",
-        element: <RegisterPage />,
-      },
-    ],
-  },
-  {
     path: "/cms",
     element: <CMSLayout />,
     children: [
@@ -47,6 +33,21 @@ const router = createBrowserRouter([
       },
     ],
   },
+  {
+    path: "/auth",
+    element: <AuthLayout />,
+    children: [
+      {
+        path: "login",
+        element: <LoginPage />,
+      },
+      {
+        path: "register",
+        element: <RegisterPage />,
+      },
+    ],
+  },
+
   {
     path: "*",
     element: <div>404 not found</div>,

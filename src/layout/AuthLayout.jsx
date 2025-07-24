@@ -11,8 +11,7 @@ export default function AuthLayout() {
   useEffect(() => {
     if (user) {
       navigate("/", { replace: true });
-    }
-    if (userRole === "admin") {
+    } else if (userRole === "admin") {
       navigate("/cms", { replace: true });
     }
   }, [user, userRole]);

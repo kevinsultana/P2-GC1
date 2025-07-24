@@ -1,15 +1,18 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { FaCartShopping, FaUser } from "react-icons/fa6";
 import LogoAlt from "../assets/logoAlt.png";
 import { auth } from "../firebase/firebase";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
+import { AuthContext } from "../contexts/AuthContext";
 
 export default function Navbar() {
+  const { userRole } = useContext(AuthContext);
   const [showAccMenu, setShowAccMenu] = useState(false);
   const [modalConfirmation, setModalConfirmation] = useState(false);
   const [animateModal, setAnimateModal] = useState(false);
 
   const navigate = useNavigate();
+  const path = useLocation();
 
   const openModal = () => {
     setModalConfirmation(true);
@@ -34,7 +37,18 @@ export default function Navbar() {
         <img src={LogoAlt} alt="logo" className="w-10" />
         <h1 className="text-black dark:text-white">Apel Gadget Store</h1>
       </div>
-      <div className="flex gap-4 text-black dark:text-white">
+      <div className="flex gap-4 text-black dark:text-white items-center">
+        {userRole === "admin" && (
+          <button
+            onClick={() =>
+              navigate(path.pathname === "/cms" ? "/" : "/cms", {
+                replace: true,
+              })
+            }
+          >
+            Go to {path.pathname === "/cms" ? "Home" : "CMS"}
+          </button>
+        )}
         <FaCartShopping />
         <FaUser
           className="cursor-pointer"

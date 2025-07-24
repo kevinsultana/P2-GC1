@@ -9,13 +9,17 @@ import { IoAdd } from "react-icons/io5";
 
 export default function CMSLayout() {
   const navigate = useNavigate();
-  const { user, loading } = useContext(AuthContext);
+  const { user, loading, userRole } = useContext(AuthContext);
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
     if (!user) {
       navigate("/auth/login", { replace: true });
+    } else if (userRole === "admin") {
+      navigate("/cms", { replace: true });
+    } else if (userRole !== "user") {
+      navigate("/", { replace: true });
     }
   }, [user, navigate]);
 

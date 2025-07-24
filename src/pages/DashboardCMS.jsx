@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
 import {
   FaBoxOpen,
   FaClipboardList,
@@ -8,6 +8,7 @@ import {
 } from "react-icons/fa";
 import { db } from "../firebase/firebase";
 import { useNavigate } from "react-router";
+import Swal from "sweetalert2";
 
 export default function DashboardCMS() {
   const [products, setProducts] = useState([]);
@@ -71,6 +72,34 @@ export default function DashboardCMS() {
   useEffect(() => {
     getDataProducts();
   }, []);
+
+  const handleDelete = async (id) => {
+    Swal.fire({
+      title: "Apakah Anda yakin?",
+      text: "Anda tidak akan bisa mengembalikan ini!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Ya, hapus!",
+      cancelButtonText: "Batal",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await deleteDoc(doc(db, "product", id));
+          getDataProducts();
+          Swal.fire("Dihapus!", "Produk Anda telah dihapus.", "success");
+        } catch (error) {
+          console.error("Error deleting document: ", error);
+          Swal.fire(
+            "Gagal!",
+            "Terjadi kesalahan saat menghapus produk.",
+            "error"
+          );
+        }
+      }
+    });
+  };
 
   return (
     <div className="space-y-6 p-6 bg-white dark:bg-gray-900 min-h-screen">
@@ -156,7 +185,10 @@ export default function DashboardCMS() {
                   >
                     Edit
                   </button>
-                  <button className="px-3 py-1 bg-rose-600 text-white rounded hover:bg-rose-700 text-sm">
+                  <button
+                    onClick={() => handleDelete(item.id)}
+                    className="px-3 py-1 bg-rose-600 text-white rounded hover:bg-rose-700 text-sm"
+                  >
                     Delete
                   </button>
                 </td>

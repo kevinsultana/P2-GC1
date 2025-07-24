@@ -1,12 +1,66 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
 import {
   FaBoxOpen,
   FaClipboardList,
   FaShoppingCart,
   FaChartBar,
 } from "react-icons/fa";
+import { db } from "../firebase/firebase";
 
 export default function DashboardCMS() {
+  const [products, setProducts] = useState([]);
+  const [Loading, setLoading] = useState(true);
+
+  const totalProduct = products?.length;
+  const totalItem = products.reduce(
+    (total, product) => total + product.stock,
+    0
+  );
+
+  const dataCard = [
+    {
+      label: "Total Produk",
+      value: totalProduct,
+      icon: <FaBoxOpen className="w-6 h-6" />,
+    },
+    {
+      label: "Total Item",
+      value: totalItem,
+      icon: <FaClipboardList className="w-6 h-6" />,
+    },
+    {
+      label: "Total Penjualan",
+      value: 100,
+      icon: <FaShoppingCart className="w-6 h-6" />,
+    },
+    {
+      label: "Total Pesanan",
+      value: 100,
+      icon: <FaChartBar className="w-6 h-6" />,
+    },
+  ];
+
+  const getDataProducts = async () => {
+    setLoading(true);
+    try {
+      const querySnap = await getDocs(collection(db, "product"));
+      const data = querySnap.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setProducts(data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getDataProducts();
+  }, []);
+
   return (
     <div className="space-y-6 p-6 bg-white dark:bg-gray-900 min-h-screen">
       <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
@@ -15,28 +69,7 @@ export default function DashboardCMS() {
 
       {/* Card Dashboard */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          {
-            label: "Total Produk",
-            value: 12,
-            icon: <FaBoxOpen className="w-6 h-6" />,
-          },
-          {
-            label: "Total Item",
-            value: 120,
-            icon: <FaClipboardList className="w-6 h-6" />,
-          },
-          {
-            label: "Total Penjualan",
-            value: 100,
-            icon: <FaShoppingCart className="w-6 h-6" />,
-          },
-          {
-            label: "Total Pesanan",
-            value: 100,
-            icon: <FaChartBar className="w-6 h-6" />,
-          },
-        ].map((item, i) => (
+        {dataCard.map((item, i) => (
           <div
             key={i}
             className="bg-gray-100 dark:bg-gray-800 p-6 rounded-xl shadow hover:shadow-md flex flex-col items-center transition"
@@ -80,24 +113,31 @@ export default function DashboardCMS() {
               <th className="px-6 py-3">Name</th>
               <th className="px-6 py-3">Category</th>
               <th className="px-6 py-3">Price</th>
+              <th className="px-6 py-3">stock</th>
               <th className="px-6 py-3">Action</th>
             </tr>
           </thead>
           <tbody>
-            {[1, 2, 3].map((i) => (
+            {Loading && <tr>Loading...</tr>}
+            {products.map((item, index) => (
               <tr
-                key={i}
+                key={index}
                 className="border-t hover:bg-gray-50 dark:hover:bg-gray-700 text-black dark:text-white"
               >
-                <td className="px-6 py-3">{i}</td>
-                <td className="px-6 py-3">
-                  <img src="https://via.placeholder.com/150" alt="pc" />
+                <td className="px-6 py-3 border-r">{index + 1}</td>
+                <td className="px-6 py-3 border-r">
+                  <img
+                    src={item.imgUrl}
+                    alt={item.name}
+                    className="w-32 h-32 object-cover rounded-md"
+                  />
                 </td>
-                <td className="px-6 py-3">Nama Produk {i}</td>
-                <td className="px-6 py-3">Kategori</td>
-                <td className="px-6 py-3">
-                  Rp {(i * 100000).toLocaleString()}
+                <td className="px-6 py-3 border-r">{item.name}</td>
+                <td className="px-6 py-3 border-r">{item.category}</td>
+                <td className="px-6 py-3 border-r">
+                  Rp {item.price.toLocaleString()}
                 </td>
+                <td className="px-6 py-3 border-r">{item.stock}</td>
                 <td className="px-6 py-3 space-x-2">
                   <button className="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 text-sm">
                     Edit

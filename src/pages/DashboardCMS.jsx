@@ -7,14 +7,21 @@ import {
   FaChartBar,
 } from "react-icons/fa";
 import { db } from "../firebase/firebase";
+import { useNavigate } from "react-router";
 
 export default function DashboardCMS() {
   const [products, setProducts] = useState([]);
   const [Loading, setLoading] = useState(true);
 
+  const navigate = useNavigate();
+
   const totalProduct = products?.length;
   const totalItem = products.reduce(
     (total, product) => total + product.stock,
+    0
+  );
+  const totalModal = products.reduce(
+    (total, product) => total + product.price * product.stock,
     0
   );
 
@@ -30,8 +37,8 @@ export default function DashboardCMS() {
       icon: <FaClipboardList className="w-6 h-6" />,
     },
     {
-      label: "Total Penjualan",
-      value: 100,
+      label: "Total Harga Barang",
+      value: `Rp. ${totalModal.toLocaleString("id-ID")}`,
       icon: <FaShoppingCart className="w-6 h-6" />,
     },
     {
@@ -55,6 +62,10 @@ export default function DashboardCMS() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleEdit = (id) => {
+    navigate(`/cms/edit-product/${id}`);
   };
 
   useEffect(() => {
@@ -139,7 +150,10 @@ export default function DashboardCMS() {
                 </td>
                 <td className="px-6 py-3 border-r">{item.stock}</td>
                 <td className="px-6 py-3 space-x-2">
-                  <button className="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 text-sm">
+                  <button
+                    onClick={() => handleEdit(item.id)}
+                    className="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 text-sm"
+                  >
                     Edit
                   </button>
                   <button className="px-3 py-1 bg-rose-600 text-white rounded hover:bg-rose-700 text-sm">

@@ -79,13 +79,27 @@ export default function EditProduct() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <img
-            src={form.imgUrl}
-            alt={form.name}
-            className="w-60 h-60 object-cover rounded-2xl"
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Gambar Produk
+          </label>
+          {form.imgUrl && (
+            <img
+              src={form.imgUrl}
+              alt={form.name}
+              className="w-60 h-60 object-cover rounded-2xl"
+            />
+          )}
+          <input
+            name="imgUrl"
+            value={form.imgUrl}
+            onChange={handleChange}
+            type="text"
+            placeholder="https://..."
+            className="w-full mt-1 px-4 py-2 border rounded-md text-sm dark:bg-gray-800 dark:text-white dark:border-gray-700"
           />
         </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Nama Produk
@@ -156,31 +170,10 @@ export default function EditProduct() {
           </select>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Gambar Produk
-          </label>
-          {form.imageUrl && (
-            <img
-              src={form.imageUrl}
-              alt="Preview"
-              className="w-32 h-32 object-cover rounded-md mb-2 border"
-            />
-          )}
-          <input
-            name="imageUrl"
-            value={form.imageUrl}
-            onChange={handleChange}
-            type="text"
-            placeholder="https://..."
-            className="w-full mt-1 px-4 py-2 border rounded-md text-sm dark:bg-gray-800 dark:text-white dark:border-gray-700"
-          />
-        </div>
-
         <div className="flex justify-end gap-3 pt-4">
           <button
             type="button"
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/cms")}
             className="px-4 py-2 rounded-md border text-sm dark:text-white dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
           >
             Batal

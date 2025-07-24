@@ -1,17 +1,122 @@
-import React from "react";
+import { name } from "@cloudinary/url-gen/actions/namedTransformation";
+import { addDoc, collection } from "firebase/firestore";
+import React, { useState } from "react";
 import { FaCloudUploadAlt } from "react-icons/fa";
+import { useNavigate } from "react-router";
+import Swal from "sweetalert2";
+import { db } from "../firebase/firebase";
+import { FaArrowLeft } from "react-icons/fa6";
 
 export default function AddNew() {
+  const [product, setProduct] = useState({
+    name: "",
+    description: "",
+    price: "",
+    stock: "",
+    category: "",
+    imgUrl: "",
+  });
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleChange = async (e) => {
+    const { name, value, files } = e.target;
+
+    if (name === "imgUrl" && files[0]) {
+      const file = files[0];
+      setLoading(true);
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "imagePngJpg");
+
+      try {
+        const res = await fetch(
+          "https://api.cloudinary.com/v1_1/dpjdzqghj/image/upload",
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        const data = await res.json();
+
+        if (data.secure_url) {
+          setProduct((prev) => ({ ...prev, imgUrl: data.secure_url }));
+          Swal.fire("Berhasil upload gambar!");
+        } else {
+          Swal.fire("Upload gagal:", data.error.message || "Unknown error");
+        }
+      } catch (error) {
+        console.error("Upload error:", error);
+        Swal.fire("Terjadi kesalahan saat upload.");
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      setProduct((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (
+      !product.name ||
+      !product.description ||
+      !product.price ||
+      !product.stock ||
+      !product.category ||
+      !product.imgUrl
+    ) {
+      Swal.fire("Semua field wajib diisi!");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await addDoc(collection(db, "product"), {
+        name: product.name,
+        description: product.description,
+        category: product.category,
+        price: parseInt(product.price),
+        stock: parseInt(product.stock),
+        imgUrl: product.imgUrl,
+      });
+
+      Swal.fire("Produk berhasil ditambahkan!");
+      navigate("/cms");
+    } catch (err) {
+      console.error("Error:", err);
+      Swal.fire("Gagal menambahkan produk.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading)
+    return (
+      <div className="bg-primaryLight dark:bg-primaryDark text-black dark:text-white w-full h-screen flex items-center justify-center">
+        <span className="loading loading-dots loading-xl"></span>
+      </div>
+    );
+
   return (
     <div>
       <div className="max-w-3xl mx-auto p-6 bg-white dark:bg-gray-900 rounded-xl shadow space-y-6">
         <div className="flex items-center gap-3">
+          <FaArrowLeft
+            onClick={() => navigate(-1)}
+            className="cursor-pointer"
+          />
           <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
             Add New Product
           </h1>
         </div>
 
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           {/* Nama Produk */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -21,6 +126,9 @@ export default function AddNew() {
               type="text"
               placeholder="Contoh: Headphone Wireless"
               className="mt-1 w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-800 dark:text-white dark:border-gray-700"
+              name="name"
+              value={product.name}
+              onChange={handleChange}
             />
           </div>
 
@@ -33,6 +141,9 @@ export default function AddNew() {
               rows={4}
               placeholder="Deskripsi produk..."
               className="mt-1 w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-800 dark:text-white dark:border-gray-700"
+              value={product.description}
+              onChange={handleChange}
+              name="description"
             />
           </div>
 
@@ -41,7 +152,12 @@ export default function AddNew() {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Kategori
             </label>
-            <select className="mt-1 w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-800 dark:text-white dark:border-gray-700">
+            <select
+              value={product.category}
+              onChange={handleChange}
+              name="category"
+              className="mt-1 w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-800 dark:text-white dark:border-gray-700"
+            >
               <option value="">Pilih kategori</option>
               <option value="elektronik">Elektronik</option>
               <option value="aksesoris">Aksesoris</option>
@@ -59,6 +175,9 @@ export default function AddNew() {
                 type="number"
                 className="mt-1 w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-800 dark:text-white dark:border-gray-700"
                 placeholder="contoh: 150000"
+                value={product.price}
+                onChange={handleChange}
+                name="price"
               />
             </div>
             <div>
@@ -69,6 +188,9 @@ export default function AddNew() {
                 type="number"
                 className="mt-1 w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-800 dark:text-white dark:border-gray-700"
                 placeholder="contoh: 20"
+                value={product.stock}
+                onChange={handleChange}
+                name="stock"
               />
             </div>
           </div>
@@ -78,10 +200,26 @@ export default function AddNew() {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Gambar Produk
             </label>
+            {product.imgUrl ? (
+              <img
+                src={product.imgUrl}
+                alt="product"
+                className="w-48 h-48 object-cover mb-3"
+              />
+            ) : (
+              <p className="text-sm text-gray-500 mb-3">
+                Belum ada gambar dipilih.
+              </p>
+            )}
             <label className="flex items-center justify-center gap-2 px-4 py-8 border-2 border-dashed border-gray-300 rounded-md cursor-pointer dark:border-gray-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800">
               <FaCloudUploadAlt className="w-6 h-6" />
               <span>Upload gambar (jpg, png)</span>
-              <input type="file" className="hidden" />
+              <input
+                type="file"
+                name="imgUrl"
+                onChange={handleChange}
+                className="hidden"
+              />
             </label>
           </div>
 

@@ -9,12 +9,18 @@ export default function AuthLayout() {
   const { user, loading, userRole } = useContext(AuthContext);
 
   useEffect(() => {
-    if (user) {
-      navigate("/", { replace: true });
-    } else if (userRole === "admin") {
-      navigate("/cms", { replace: true });
+    if (loading) {
+      return;
     }
-  }, [user, userRole]);
+
+    if (user) {
+      if (userRole === "admin") {
+        navigate("/cms", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
+    }
+  }, [user, loading, userRole, navigate]);
 
   if (loading)
     return (

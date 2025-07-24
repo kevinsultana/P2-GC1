@@ -14,14 +14,16 @@ export default function CMSLayout() {
   const location = useLocation();
 
   useEffect(() => {
+    if (loading) {
+      return;
+    }
+
     if (!user) {
       navigate("/auth/login", { replace: true });
-    } else if (userRole === "admin") {
-      navigate("/cms", { replace: true });
-    } else if (userRole !== "user") {
+    } else if (userRole !== "admin") {
       navigate("/", { replace: true });
     }
-  }, [user, navigate]);
+  }, [user, loading, userRole, navigate]);
 
   if (loading)
     return (
@@ -54,8 +56,8 @@ export default function CMSLayout() {
             {/* Home Link */}
             <button
               onClick={() => navigate("/cms")}
-              className={`flex items-center gap-4 w-full p-3 rounded-lg 
-                transition-colors duration-200 
+              className={`flex items-center gap-4 w-full p-3 rounded-lg
+                transition-colors duration-200
                 ${
                   location.pathname === "/cms"
                     ? "bg-blue-600 text-white shadow-lg"
@@ -75,8 +77,8 @@ export default function CMSLayout() {
             {/* Add New Product Link */}
             <button
               onClick={() => navigate("/cms/new-product")}
-              className={`flex items-center gap-4 w-full p-3 rounded-lg 
-                transition-colors duration-200 
+              className={`flex items-center gap-4 w-full p-3 rounded-lg
+                transition-colors duration-200
                 ${
                   location.pathname === "/cms/new-product"
                     ? "bg-blue-600 text-white shadow-lg"

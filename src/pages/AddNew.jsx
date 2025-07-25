@@ -1,4 +1,3 @@
-// src/pages/AddNew.jsx
 import { useEffect, useState } from "react";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { useNavigate } from "react-router";
@@ -107,7 +106,6 @@ export default function AddNew() {
     setCategoryError(null);
 
     try {
-      // Check if category already exists (case-insensitive for name)
       const categoriesRef = collection(db, "categories");
       const q = query(
         categoriesRef,

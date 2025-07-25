@@ -14,10 +14,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import { db } from "../firebase/firebase";
 import Swal from "sweetalert2";
 import CloudinaryUploadBtn from "../components/CloudinaryUploadBtn";
-import {
-  FileUploaderMinimal,
-  FileUploaderRegular,
-} from "@uploadcare/react-uploader";
+import { FileUploaderRegular } from "@uploadcare/react-uploader";
 import "@uploadcare/react-uploader/core.css";
 
 export default function EditProduct() {
@@ -36,12 +33,8 @@ export default function EditProduct() {
   const [newCategoryName, setNewCategoryName] = useState("");
 
   const [categories, setCategories] = useState([]);
-  const [categoryLoading, setCategoryLoading] = useState(false);
-  const [categoryError, setCategoryError] = useState(null);
 
   const fetchCategoriesFromFirebase = async () => {
-    setCategoryLoading(true);
-    setCategoryError(null);
     try {
       const q = query(collection(db, "categories"));
       const querySnap = await getDocs(q);
@@ -52,14 +45,11 @@ export default function EditProduct() {
       setCategories(data);
     } catch (error) {
       console.error("Error fetching categories:", error);
-      setCategoryError(error.message);
       Swal.fire(
         "Gagal",
         `Error fetching categories: ${error.message}`,
         "error"
       );
-    } finally {
-      setCategoryLoading(false);
     }
   };
 
@@ -73,9 +63,6 @@ export default function EditProduct() {
       return;
     }
 
-    setCategoryLoading(true);
-    setCategoryError(null);
-
     try {
       const categoriesRef = collection(db, "categories");
       const q = query(
@@ -85,7 +72,6 @@ export default function EditProduct() {
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
-        setCategoryError("Category already exists.");
         Swal.fire("Gagal", "Kategori sudah ada!", "error");
         return;
       }
@@ -101,14 +87,11 @@ export default function EditProduct() {
       fetchCategoriesFromFirebase();
     } catch (error) {
       console.error("Error adding category:", error);
-      setCategoryError(error.message);
       Swal.fire(
         "Gagal",
         `Terjadi kesalahan saat menambahkan kategori: ${error.message}`,
         "error"
       );
-    } finally {
-      setCategoryLoading(false);
     }
   };
 

@@ -37,9 +37,10 @@ export default function Navbar() {
         <img src={LogoAlt} alt="logo" className="w-10" />
         <h1 className="text-black dark:text-white">Apel Gadget Store</h1>
       </div>
-      <div className="flex gap-4 text-black dark:text-white items-center">
+      <div className="flex gap-4 text-black dark:text-white items-center ">
         {userRole === "admin" && (
           <button
+            className="cursor-pointer"
             onClick={() =>
               navigate(path.pathname === "/cms" ? "/" : "/cms", {
                 replace: true,

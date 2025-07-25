@@ -4,6 +4,12 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { FaArrowLeft } from "react-icons/fa";
 import { db } from "../firebase/firebase";
 import Swal from "sweetalert2";
+import CloudinaryUploadBtn from "../components/CloudinaryUploadBtn";
+import {
+  FileUploaderMinimal,
+  FileUploaderRegular,
+} from "@uploadcare/react-uploader";
+import "@uploadcare/react-uploader/core.css";
 
 export default function EditProduct() {
   const { id } = useParams();
@@ -95,9 +101,22 @@ export default function EditProduct() {
             value={form.imgUrl}
             onChange={handleChange}
             type="text"
+            disabled={true}
             placeholder="https://..."
             className="w-full mt-1 px-4 py-2 border rounded-md text-sm dark:bg-gray-800 dark:text-white dark:border-gray-700"
           />
+          <div className="flex items-center justify-center gap-6">
+            <CloudinaryUploadBtn
+              setImgUrl={(i) => setForm({ ...form, imgUrl: i })}
+            />
+            <FileUploaderRegular
+              sourceList="local, camera, facebook, gdrive"
+              pubkey="f8300ab6fd057a0cbcb8"
+              onFileUploadSuccess={(result) => {
+                setForm({ ...form, imgUrl: result.cdnUrl });
+              }}
+            />
+          </div>
         </div>
 
         <div>

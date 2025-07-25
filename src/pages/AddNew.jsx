@@ -202,14 +202,14 @@ export default function AddNew() {
         <div className="flex items-center gap-3">
           <FaArrowLeft
             onClick={() => navigate(-1)}
-            className="cursor-pointer"
+            className="cursor-pointer text-gray-800 dark:text-white"
           />
           <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
             Add New Product
           </h1>
         </div>
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form className="space-y-4 text-black" onSubmit={handleSubmit}>
           {/* Nama Produk */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -361,12 +361,12 @@ export default function AddNew() {
               placeholder="Nama kategori..."
               value={newCategoryName}
               onChange={(e) => setNewCategoryName(e.target.value)}
-              className="w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-700 dark:text-white dark:border-gray-600 mb-4"
+              className="w-full px-4 py-2 border rounded-md text-sm text-black dark:bg-gray-700 dark:text-white dark:border-gray-600 mb-4"
             />
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setShowAddCategoryModal(false)}
-                className="px-4 py-2 rounded-md border text-sm dark:text-white dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="px-4 py-2 rounded-md border text-sm text-black dark:text-white dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 Batal
               </button>

@@ -315,12 +315,12 @@ export default function EditProduct() {
               placeholder="Nama kategori..."
               value={newCategoryName}
               onChange={(e) => setNewCategoryName(e.target.value)}
-              className="w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-700 dark:text-white dark:border-gray-600 mb-4"
+              className="w-full px-4 py-2 border rounded-md text-sm text-black dark:bg-gray-700 dark:text-white dark:border-gray-600 mb-4"
             />
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setShowAddCategoryModal(false)}
-                className="px-4 py-2 rounded-md border text-sm dark:text-white dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="px-4 py-2 rounded-md border text-sm text-black dark:text-white dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 Batal
               </button>

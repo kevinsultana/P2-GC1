@@ -231,8 +231,10 @@ export default function DashboardCMS() {
                       className="w-32 h-32 object-cover rounded-md"
                     />
                   </td>
-                  <td className="px-6 py-3 border-r">{item.name}</td>
-                  <td className="px-6 py-3 border-r">{item.category}</td>
+                  <td className="px-6 py-3 border-r capitalize">{item.name}</td>
+                  <td className="px-6 py-3 border-r capitalize">
+                    {item.category}
+                  </td>
                   <td className="px-6 py-3 border-r">
                     Rp {item.price ? item.price.toLocaleString() : "0"}
                   </td>

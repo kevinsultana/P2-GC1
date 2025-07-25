@@ -1,11 +1,10 @@
-import { name } from "@cloudinary/url-gen/actions/namedTransformation";
-import { addDoc, collection } from "firebase/firestore";
-import React, { useState } from "react";
+import { useState } from "react";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
-import { db } from "../firebase/firebase";
 import { FaArrowLeft } from "react-icons/fa6";
+import { addProduct } from "../redux/feature/productSlice";
+import { useDispatch } from "react-redux";
 
 export default function AddNew() {
   const [product, setProduct] = useState({
@@ -19,6 +18,7 @@ export default function AddNew() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = async (e) => {
     const { name, value, files } = e.target;
@@ -29,7 +29,7 @@ export default function AddNew() {
 
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("upload_preset", "imagePngJpg");
+      formData.append("upload_preset", "img-jpg");
 
       try {
         const res = await fetch(
@@ -77,19 +77,28 @@ export default function AddNew() {
     setLoading(true);
 
     try {
-      await addDoc(collection(db, "product"), {
-        name: product.name,
-        description: product.description,
-        category: product.category,
-        price: parseInt(product.price),
-        stock: parseInt(product.stock),
-        imgUrl: product.imgUrl,
-      });
+      const actionResult = await dispatch(
+        addProduct({
+          ...product,
+          price: Number(product.price),
+          stock: Number(product.stock),
+        })
+      );
 
-      Swal.fire("Produk berhasil ditambahkan!");
-      navigate("/cms");
-    } catch (err) {
-      console.error("Error:", err);
+      if (addProduct.fulfilled.match(actionResult)) {
+        Swal.fire("Berhasil", "Produk berhasil ditambahkan!", "success");
+        navigate("/cms");
+      } else {
+        Swal.fire(
+          "Gagal",
+          `Gagal menambahkan produk: ${
+            actionResult.payload || "Terjadi kesalahan tidak diketahui."
+          }`,
+          "error"
+        );
+      }
+    } catch (error) {
+      console.error("Error:", error);
       Swal.fire("Gagal menambahkan produk.");
     } finally {
       setLoading(false);
@@ -226,6 +235,7 @@ export default function AddNew() {
           {/* Tombol Aksi */}
           <div className="flex justify-end gap-3 pt-4">
             <button
+              onClick={() => navigate(-1)}
               type="button"
               className="px-4 py-2 rounded-md border text-sm dark:text-white dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
             >

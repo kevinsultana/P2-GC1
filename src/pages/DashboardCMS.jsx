@@ -1,28 +1,30 @@
-import React, { useEffect, useState } from "react";
-import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
+import React, { useEffect } from "react";
 import {
   FaBoxOpen,
   FaClipboardList,
   FaShoppingCart,
   FaChartBar,
 } from "react-icons/fa";
-import { db } from "../firebase/firebase";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
+import { useSelector, useDispatch } from "react-redux";
+import { deleteProduct, fetchProducts } from "../redux/feature/productSlice";
 
 export default function DashboardCMS() {
-  const [products, setProducts] = useState([]);
-  const [Loading, setLoading] = useState(true);
-
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const products = useSelector((state) => state.products.items);
+  const loading = useSelector((state) => state.products.loading);
+  const error = useSelector((state) => state.products.error);
 
   const totalProduct = products?.length;
   const totalItem = products.reduce(
-    (total, product) => total + product.stock,
+    (total, product) => total + (product.stock || 0),
     0
   );
   const totalModal = products.reduce(
-    (total, product) => total + product.price * product.stock,
+    (total, product) => total + (product.price || 0) * (product.stock || 0),
     0
   );
 
@@ -49,29 +51,13 @@ export default function DashboardCMS() {
     },
   ];
 
-  const getDataProducts = async () => {
-    setLoading(true);
-    try {
-      const querySnap = await getDocs(collection(db, "product"));
-      const data = querySnap.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setProducts(data);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    dispatch(fetchProducts());
+  }, [dispatch]);
 
   const handleEdit = (id) => {
     navigate(`/cms/edit-product/${id}`);
   };
-
-  useEffect(() => {
-    getDataProducts();
-  }, []);
 
   const handleDelete = async (id) => {
     Swal.fire({
@@ -85,21 +71,33 @@ export default function DashboardCMS() {
       cancelButtonText: "Batal",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        try {
-          await deleteDoc(doc(db, "product", id));
-          getDataProducts();
+        const actionResult = await dispatch(deleteProduct(id));
+        if (deleteProduct.fulfilled.match(actionResult)) {
           Swal.fire("Dihapus!", "Produk Anda telah dihapus.", "success");
-        } catch (error) {
-          console.error("Error deleting document: ", error);
+        } else {
+          const errorMessage =
+            actionResult.payload || "Terjadi kesalahan yang tidak diketahui.";
           Swal.fire(
             "Gagal!",
-            "Terjadi kesalahan saat menghapus produk.",
+            `Terjadi kesalahan saat menghapus produk: ${errorMessage}`,
             "error"
           );
         }
       }
     });
   };
+
+  if (loading && products.length === 0) {
+    return (
+      <div className="bg-primaryLight dark:bg-primaryDark text-black dark:text-white w-full h-screen flex items-center justify-center">
+        <span className="loading loading-dots loading-xl"></span>
+      </div>
+    );
+  }
+
+  if (error && products.length === 0) {
+    return <div className="text-center text-red-500 mt-10">Error: {error}</div>;
+  }
 
   return (
     <div className="space-y-6 p-6 bg-white dark:bg-gray-900 min-h-screen">
@@ -127,7 +125,7 @@ export default function DashboardCMS() {
         ))}
       </div>
 
-      {/* Search & Filter */}
+      {/* Search & Filter (tetap seperti sebelumnya, tidak terkait Redux) */}
       <div className="flex flex-wrap items-center gap-4 mt-4">
         <input
           type="text"
@@ -137,8 +135,6 @@ export default function DashboardCMS() {
         <select className="px-4 py-2 border rounded text-sm text-black dark:bg-gray-800 dark:text-white dark:border-gray-700 space-y-3">
           <option value="">All Categories</option>
           <option value="elektronik">Elektronik</option>
-          <option value="aksesoris">Aksesoris</option>
-          <option value="aksesoris">Aksesoris</option>
           <option value="aksesoris">Aksesoris</option>
         </select>
       </div>
@@ -153,47 +149,57 @@ export default function DashboardCMS() {
               <th className="px-6 py-3">Name</th>
               <th className="px-6 py-3">Category</th>
               <th className="px-6 py-3">Price</th>
-              <th className="px-6 py-3">stock</th>
+              <th className="px-6 py-3">Stock</th>
               <th className="px-6 py-3">Action</th>
             </tr>
           </thead>
           <tbody>
-            {Loading && <tr>Loading...</tr>}
-            {products.map((item, index) => (
-              <tr
-                key={index}
-                className="border-t hover:bg-gray-50 dark:hover:bg-gray-700 text-black dark:text-white"
-              >
-                <td className="px-6 py-3 border-r">{index + 1}</td>
-                <td className="px-6 py-3 border-r">
-                  <img
-                    src={item.imgUrl}
-                    alt={item.name}
-                    className="w-32 h-32 object-cover rounded-md"
-                  />
-                </td>
-                <td className="px-6 py-3 border-r">{item.name}</td>
-                <td className="px-6 py-3 border-r">{item.category}</td>
-                <td className="px-6 py-3 border-r">
-                  Rp {item.price.toLocaleString()}
-                </td>
-                <td className="px-6 py-3 border-r">{item.stock}</td>
-                <td className="px-6 py-3 space-x-2">
-                  <button
-                    onClick={() => handleEdit(item.id)}
-                    className="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 text-sm"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(item.id)}
-                    className="px-3 py-1 bg-rose-600 text-white rounded hover:bg-rose-700 text-sm"
-                  >
-                    Delete
-                  </button>
+            {products.length === 0 ? (
+              <tr>
+                <td
+                  colSpan="7"
+                  className="text-center py-4 text-gray-500 dark:text-gray-400"
+                >
+                  {loading ? "Memuat produk..." : "Tidak ada produk ditemukan."}
                 </td>
               </tr>
-            ))}
+            ) : (
+              products.map((item, index) => (
+                <tr
+                  key={item.id}
+                  className="border-t hover:bg-gray-50 dark:hover:bg-gray-700 text-black dark:text-white"
+                >
+                  <td className="px-6 py-3 border-r">{index + 1}</td>
+                  <td className="px-6 py-3 border-r">
+                    <img
+                      src={item.imgUrl}
+                      alt={item.name}
+                      className="w-32 h-32 object-cover rounded-md"
+                    />
+                  </td>
+                  <td className="px-6 py-3 border-r">{item.name}</td>
+                  <td className="px-6 py-3 border-r">{item.category}</td>
+                  <td className="px-6 py-3 border-r">
+                    Rp {item.price ? item.price.toLocaleString() : "0"}
+                  </td>
+                  <td className="px-6 py-3 border-r">{item.stock}</td>
+                  <td className="px-6 py-3 space-x-2">
+                    <button
+                      onClick={() => handleEdit(item.id)}
+                      className="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 text-sm"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(item.id)}
+                      className="px-3 py-1 bg-rose-600 text-white rounded hover:bg-rose-700 text-sm"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

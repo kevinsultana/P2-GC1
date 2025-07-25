@@ -1,10 +1,14 @@
-import { useState } from "react";
+// src/pages/AddNew.jsx
+import { useEffect, useState } from "react";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 import { FaArrowLeft } from "react-icons/fa6";
 import { addProduct } from "../redux/feature/productSlice";
 import { useDispatch } from "react-redux";
+
+import { collection, getDocs, addDoc, query, where } from "firebase/firestore";
+import { db } from "../firebase/firebase";
 
 export default function AddNew() {
   const [product, setProduct] = useState({
@@ -16,9 +20,43 @@ export default function AddNew() {
     imgUrl: "",
   });
   const [loading, setLoading] = useState(false);
+  const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+
+  const [categories, setCategories] = useState([]);
+  const [categoryLoading, setCategoryLoading] = useState(false);
+  const [categoryError, setCategoryError] = useState(null);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const fetchCategoriesFromFirebase = async () => {
+    setCategoryLoading(true);
+    setCategoryError(null);
+    try {
+      const q = query(collection(db, "categories"));
+      const querySnap = await getDocs(q);
+      const data = querySnap.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setCategories(data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      setCategoryError(error.message);
+      Swal.fire(
+        "Gagal",
+        `Error fetching categories: ${error.message}`,
+        "error"
+      );
+    } finally {
+      setCategoryLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategoriesFromFirebase();
+  }, []);
 
   const handleChange = async (e) => {
     const { name, value, files } = e.target;
@@ -56,6 +94,52 @@ export default function AddNew() {
       }
     } else {
       setProduct((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleAddCategory = async () => {
+    if (!newCategoryName.trim()) {
+      Swal.fire("Nama kategori tidak boleh kosong!");
+      return;
+    }
+
+    setCategoryLoading(true);
+    setCategoryError(null);
+
+    try {
+      // Check if category already exists (case-insensitive for name)
+      const categoriesRef = collection(db, "categories");
+      const q = query(
+        categoriesRef,
+        where("name", "==", newCategoryName.trim().toLowerCase())
+      );
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        setCategoryError("Category already exists.");
+        Swal.fire("Gagal", "Kategori sudah ada!", "error");
+        return;
+      }
+
+      await addDoc(categoriesRef, {
+        name: newCategoryName.trim().toLowerCase(),
+        originalName: newCategoryName.trim(),
+      });
+
+      Swal.fire("Berhasil", "Kategori berhasil ditambahkan!", "success");
+      setNewCategoryName("");
+      setShowAddCategoryModal(false);
+      fetchCategoriesFromFirebase();
+    } catch (error) {
+      console.error("Error adding category:", error);
+      setCategoryError(error.message);
+      Swal.fire(
+        "Gagal",
+        `Terjadi kesalahan saat menambahkan kategori: ${error.message}`,
+        "error"
+      );
+    } finally {
+      setCategoryLoading(false);
     }
   };
 
@@ -105,7 +189,7 @@ export default function AddNew() {
     }
   };
 
-  if (loading)
+  if (loading || categoryLoading)
     return (
       <div className="bg-primaryLight dark:bg-primaryDark text-black dark:text-white w-full h-screen flex items-center justify-center">
         <span className="loading loading-dots loading-xl"></span>
@@ -161,17 +245,31 @@ export default function AddNew() {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Kategori
             </label>
-            <select
-              value={product.category}
-              onChange={handleChange}
-              name="category"
-              className="mt-1 w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-800 dark:text-white dark:border-gray-700"
-            >
-              <option value="">Pilih kategori</option>
-              <option value="elektronik">Elektronik</option>
-              <option value="aksesoris">Aksesoris</option>
-              <option value="lainnya">Lainnya</option>
-            </select>
+            <div className="flex gap-2">
+              <select
+                value={product.category}
+                onChange={handleChange}
+                name="category"
+                className="mt-1 w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-800 dark:text-white dark:border-gray-700"
+              >
+                <option value="">Pilih kategori</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.name}>
+                    {cat.originalName}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={() => setShowAddCategoryModal(true)}
+                className="mt-1 px-4 py-2 bg-green-500 text-white rounded-md text-sm hover:bg-green-600"
+              >
+                +
+              </button>
+            </div>
+            {categoryError && (
+              <p className="text-red-500 text-xs mt-1">{categoryError}</p>
+            )}
           </div>
 
           {/* Harga & Stok */}
@@ -250,6 +348,38 @@ export default function AddNew() {
           </div>
         </form>
       </div>
+
+      {/* Add Category Modal */}
+      {showAddCategoryModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-11/12 max-w-sm">
+            <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">
+              Tambah Kategori Baru
+            </h2>
+            <input
+              type="text"
+              placeholder="Nama kategori..."
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
+              className="w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-700 dark:text-white dark:border-gray-600 mb-4"
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setShowAddCategoryModal(false)}
+                className="px-4 py-2 rounded-md border text-sm dark:text-white dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleAddCategory}
+                className="px-4 py-2 rounded-md bg-indigo-600 text-white text-sm hover:bg-indigo-700"
+              >
+                Tambah
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

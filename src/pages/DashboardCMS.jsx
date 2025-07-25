@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FaBoxOpen,
   FaClipboardList,
@@ -9,6 +9,8 @@ import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 import { useSelector, useDispatch } from "react-redux";
 import { deleteProduct, fetchProducts } from "../redux/feature/productSlice";
+import { collection, getDocs, query } from "firebase/firestore";
+import { db } from "../firebase/firebase";
 
 export default function DashboardCMS() {
   const dispatch = useDispatch();
@@ -17,6 +19,44 @@ export default function DashboardCMS() {
   const products = useSelector((state) => state.products.items);
   const loading = useSelector((state) => state.products.loading);
   const error = useSelector((state) => state.products.error);
+
+  const [categories, setCategories] = useState([]);
+  const [categoryLoading, setCategoryLoading] = useState(false);
+
+  const [filter, setFilter] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const fetchCategoriesFromFirebase = async () => {
+    setCategoryLoading(true);
+    try {
+      const q = query(collection(db, "categories"));
+      const querySnap = await getDocs(q);
+      const data = querySnap.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setCategories(data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      Swal.fire(
+        "Gagal",
+        `Error fetching categories: ${error.message}`,
+        "error"
+      );
+    } finally {
+      setCategoryLoading(false); //
+    }
+  };
+
+  const filteredProducts = products.filter((product) => {
+    const matchesCategory =
+      filter === "all" ||
+      product.category.toLowerCase() === filter.toLowerCase();
+    const matchesSearch = product.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   const totalProduct = products?.length;
   const totalItem = products.reduce(
@@ -53,6 +93,7 @@ export default function DashboardCMS() {
 
   useEffect(() => {
     dispatch(fetchProducts());
+    fetchCategoriesFromFirebase();
   }, [dispatch]);
 
   const handleEdit = (id) => {
@@ -87,7 +128,7 @@ export default function DashboardCMS() {
     });
   };
 
-  if (loading && products.length === 0) {
+  if (loading || categoryLoading) {
     return (
       <div className="bg-primaryLight dark:bg-primaryDark text-black dark:text-white w-full h-screen flex items-center justify-center">
         <span className="loading loading-dots loading-xl"></span>
@@ -95,7 +136,7 @@ export default function DashboardCMS() {
     );
   }
 
-  if (error && products.length === 0) {
+  if (error) {
     return <div className="text-center text-red-500 mt-10">Error: {error}</div>;
   }
 
@@ -125,17 +166,30 @@ export default function DashboardCMS() {
         ))}
       </div>
 
-      {/* Search & Filter (tetap seperti sebelumnya, tidak terkait Redux) */}
+      {/* Search & Filter  */}
       <div className="flex flex-wrap items-center gap-4 mt-4">
         <input
           type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Search product name..."
           className="px-4 py-2 border rounded-lg w-full sm:w-64 text-sm text-black dark:bg-gray-800 dark:text-white dark:border-gray-700"
         />
-        <select className="px-4 py-2 border rounded text-sm text-black dark:bg-gray-800 dark:text-white dark:border-gray-700 space-y-3">
-          <option value="">All Categories</option>
-          <option value="elektronik">Elektronik</option>
-          <option value="aksesoris">Aksesoris</option>
+        <select
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          className="px-4 py-2 border rounded text-sm text-black dark:bg-gray-800 dark:text-white dark:border-gray-700 space-y-3 capitalize"
+        >
+          <option value="all">All Categories</option>
+          {categories.map((category) => (
+            <option
+              className="capitalize"
+              key={category.id}
+              value={category.name}
+            >
+              {category.name}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -154,7 +208,7 @@ export default function DashboardCMS() {
             </tr>
           </thead>
           <tbody>
-            {products.length === 0 ? (
+            {filteredProducts.length === 0 ? (
               <tr>
                 <td
                   colSpan="7"
@@ -164,7 +218,7 @@ export default function DashboardCMS() {
                 </td>
               </tr>
             ) : (
-              products.map((item, index) => (
+              filteredProducts.map((item, index) => (
                 <tr
                   key={item.id}
                   className="border-t hover:bg-gray-50 dark:hover:bg-gray-700 text-black dark:text-white"

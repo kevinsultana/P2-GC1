@@ -309,7 +309,7 @@ export default function AddNew() {
               <img
                 src={product.imgUrl}
                 alt="product"
-                className="w-48 h-48 object-cover mb-3"
+                className="w-32 h-32 sm:w-48 sm:h-48 object-cover mb-3"
               />
             ) : (
               <p className="text-sm text-gray-500 mb-3">

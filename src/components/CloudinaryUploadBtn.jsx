@@ -13,7 +13,6 @@ export default function CloudinaryUploadBtn({ setImgUrl }) {
       },
       function (error, result) {
         if (!error && result && result.event === "success") {
-          //   console.log("Upload successful:", result.info.secure_url);
           setImgUrl(result.info.secure_url);
         }
       }
@@ -23,13 +22,13 @@ export default function CloudinaryUploadBtn({ setImgUrl }) {
   return (
     <div>
       <button
-        className="btn btn-primary"
+        className="btn btn-primary text-xs md:text-sm lg:text-base"
         onClick={(e) => {
           e.preventDefault();
           widgetRef.current.open();
         }}
       >
-        Upload with Cloudinary
+        Upload Cloudinary
       </button>
     </div>
   );

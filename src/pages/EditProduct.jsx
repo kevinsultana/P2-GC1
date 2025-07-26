@@ -164,7 +164,7 @@ export default function EditProduct() {
             <img
               src={form.imgUrl}
               alt={form.name}
-              className="w-60 h-60 object-cover rounded-2xl"
+              className="w-32 h-32 sm:w-48 sm:h-48 lg:w-60 lg:h-60 object-cover rounded-2xl"
             />
           )}
           <input

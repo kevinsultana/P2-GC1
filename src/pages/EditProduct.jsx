@@ -252,11 +252,15 @@ export default function EditProduct() {
               name="category"
               value={form.category}
               onChange={handleChange}
-              className="w-full mt-1 px-4 py-2 border rounded-md text-sm dark:bg-gray-800 dark:text-white dark:border-gray-700"
+              className="w-full mt-1 px-4 py-2 capitalize border rounded-md text-sm dark:bg-gray-800 dark:text-white dark:border-gray-700"
             >
               <option value="">Pilih kategori</option>
               {categories.map((category) => (
-                <option key={category.id} value={category.name}>
+                <option
+                  key={category.id}
+                  value={category.name}
+                  className="capitalize"
+                >
                   {category.name}
                 </option>
               ))}

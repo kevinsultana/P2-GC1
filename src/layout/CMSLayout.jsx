@@ -44,7 +44,7 @@ export default function CMSLayout() {
           className={`
             fixed lg:static h-full lg:h-auto top-0 left-0 z-40
             ${
-              isSideBarOpen ? "w-64 translate-x-0" : "w-0 -translate-x-full"
+              isSideBarOpen ? "w-64 translate-x-0" : "w-20 -translate-x-full"
             } lg:${isSideBarOpen ? "w-64" : "w-20"} lg:translate-x-0
             bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700
             py-6 px-4 transition-all duration-300 ease-in-out

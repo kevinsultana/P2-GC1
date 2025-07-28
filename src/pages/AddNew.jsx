@@ -248,11 +248,11 @@ export default function AddNew() {
                 value={product.category}
                 onChange={handleChange}
                 name="category"
-                className="mt-1 w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-800 dark:text-white dark:border-gray-700"
+                className="mt-1 w-full px-4 py-2 capitalize border rounded-md text-sm dark:bg-gray-800 dark:text-white dark:border-gray-700"
               >
                 <option value="">Pilih kategori</option>
                 {categories.map((cat) => (
-                  <option key={cat.id} value={cat.name}>
+                  <option key={cat.id} value={cat.name} className="capitalize">
                     {cat.originalName}
                   </option>
                 ))}
